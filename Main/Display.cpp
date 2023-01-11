@@ -9,6 +9,7 @@
 #define dc 2
 #define BACKGROUNDCOLOR TFT_BLACK
 TFT_eSPI tft=TFT_eSPI;
+const int array screenSize = {100, 500};
 
 //state
 char* state = "main";
@@ -22,6 +23,10 @@ void initializeDisplay(){
 void drawText(char* text, int x, int y, int size){
     tft.setTextSize(size);
     tft.drawString(text, x, y);
+}
+
+void aligningGPS(){
+    
 }
 
 void debug(){
