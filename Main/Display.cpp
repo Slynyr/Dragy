@@ -7,34 +7,44 @@
 #define CS 15
 #define RESET 4
 #define dc 2
-#define BACKGROUNDCOLOR TFT_BLACK
-TFT_eSPI tft=TFT_eSPI;
-const int array screenSize = {100, 500};
+
+//colors
+#define BACKGROUNDCOLOR 0x0842
+#define DARKBLUE 0x104D
+//http://www.rinkydinkelectronics.com/calc_rgb565.php
+//#define BACKGROUNDCOLOR TFT_BLACK
+
+TFT_eSPI tft = TFT_eSPI();
 
 //state
 char* state = "main";
 
-
+//----INIT
 void initializeDisplay(){
     tft.init();
-    tft.fillscreen(BACKGROUNDCOLOR);
+    tft.setRotation(-1);
+    tft.fillScreen(BACKGROUNDCOLOR);
 }
 
+//----TOOLS
 void drawText(char* text, int x, int y, int size){
     tft.setTextSize(size);
     tft.drawString(text, x, y);
 }
 
+//----MAIN
 void aligningGPS(){
     
 }
 
 void debug(){
-    drawText("test", 100, 100, 5);
+    drawText("test", 0, 0, 5);
 }
 
 void renderDisplay(){
     if (state == "main"){
-        debug();
+        debug();    
+        Serial.println(tft.width());
+        Serial.println(tft.height());
     }
 }

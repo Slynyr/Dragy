@@ -1,5 +1,6 @@
 #include "cmath"
 #include "Wire.h"
+#include "Arduino.h"
 //accelorometer pins
 //https://forum.arduino.cc/t/calculate-g-force-using-an-accelerometer-gy-521-mpu-6050-arduino-due/248850
 //https://lastminuteengineers.com/mpu6050-accel-gyro-arduino-tutorial/
@@ -17,10 +18,6 @@ float gy = 0.f;
 float gz = 0.f;
 float temperature = 0.f;
 float heading = 0.f;
-
-int heading(){
-
-}
 
 int gCounter(){
 

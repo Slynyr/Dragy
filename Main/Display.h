@@ -4,4 +4,7 @@
 void initializeDisplay();
 //initializes TFT_eSPI
 
+void renderDisplay();
+//display renderer
+
 #endif
