@@ -44,7 +44,5 @@ void debug(){
 void renderDisplay(){
     if (state == "main"){
         debug();    
-        Serial.println(tft.width());
-        Serial.println(tft.height());
     }
 }

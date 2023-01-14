@@ -2,8 +2,8 @@
 #include <SoftwareSerial.h>
 
 //GPS module pins
-#define GPSrx RX2
-#define GPStx TX2
+#define GPSrx 16
+#define GPStx 17
 static const uint32_t GPSBaud = 4800;
 
 //GPS objects
@@ -23,14 +23,18 @@ void GPStelemetry(){
         Serial.print("Location: ");
         Serial.print(gps.location.lat(), 6);
         Serial.print(", ");
-        Serial.print(gps.location,lng(), 6);
-        Serial.println("")
+        Serial.print(gps.location.lng(), 6);
+        Serial.println("");
     } else {
-        Serial.println("[WARN] Invalid gps position")
+        Serial.println("[WARN] Invalid gps position");
     }
 }
 
 void initializeGPS(){
+    //initializing pins
+    pinMode(GPSrx, INPUT);
+    pinMode(GPStx, OUTPUT);
+
     ss.begin(GPSBaud);
     Serial.println("[STATUS] GPS initialized");
 }
@@ -42,5 +46,7 @@ void GPSmanager(){
         } else {
             Serial.println("[STATUS] GPS is aligning");
         }
+    } else {
+        Serial.println("[WARN] Software Serial unavailable");
     }
 }
