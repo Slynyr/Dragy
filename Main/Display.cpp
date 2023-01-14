@@ -21,8 +21,8 @@ char* state = "main";
 
 //----INIT
 void initializeDisplay(){
-    tft.init();
-    tft.setRotation(-1);
+    tft.init(); 
+    tft.setRotation(3);
     tft.fillScreen(BACKGROUNDCOLOR);
 }
 
