@@ -1,12 +1,14 @@
 #include "cmath"
 #include "Wire.h"
 #include "Arduino.h"
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
 //accelorometer pins
 //https://forum.arduino.cc/t/calculate-g-force-using-an-accelerometer-gy-521-mpu-6050-arduino-due/248850
 //https://lastminuteengineers.com/mpu6050-accel-gyro-arduino-tutorial/
 
 //i2s 
-const int MPU = 0x68; 
+Adafruit_MPU6050 mpu;
 
 //telemetry
 float vector = 0.f;
@@ -16,7 +18,7 @@ float az = 0.f;
 float gx = 0.f;
 float gy = 0.f; 
 float gz = 0.f;
-float temperature = 0.f;
+float tempRead = 0.f;
 float heading = 0.f;
 
 int gCounter(){
@@ -40,20 +42,21 @@ void printTelemetry(){
 }
 
 void ACCtelemetry(){
-    Wire.beginTransmission(MPU);
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
 
-    Wire.write(0x3B); //talk to ACCEL register
-    Wire.endTransmission(false);
-    Wire.requestFrom(MPU, 7*2, true); //*
+    //acceleration
+    ax = a.acceleration.x;
+    ay = a.acceleration.y;
+    az = a.acceleration.z;
 
-    //retrieving telemetry
-    ax = Wire.read()<<8 | Wire.read(); //reading from 2 registers
-    ay = Wire.read()<<8 | Wire.read();
-    az = Wire.read()<<8 | Wire.read();
-    temperature = Wire.read()<<8 | Wire.read();
-    gx = Wire.read()<<8 | Wire.read();
-    gy = Wire.read()<<8 | Wire.read();
-    gz = Wire.read()<<8 | Wire.read();
+    //gyro
+    gx = g.acceleration.x;
+    gy = g.acceleration.y;
+    gz = g.acceleration.z;
+
+    //temp
+    tempRead = temp.temperature;
 
     //calculations
     vector = sqrt(ax + ay + az*az);
@@ -62,24 +65,15 @@ void ACCtelemetry(){
 }
 
 void initializeAccelorometer(){
-    Wire.begin();
-    Wire.beginTransmission(MPU);
-    
-    //Reset acc
-    Wire.write(0x6B); //talk to specified shift register
-    Wire.write(0x00); //reset shift register
-    Wire.endTransmission(true);
+    if (!mpu.begin()){
+        Serial.println("[WARN] FAILED to find MPU6050");
+    } else {
+        Serial.println("[NOTIF] MPU6050 has initialized");
+    }
 
-    //config g-force range
-    Wire.write(0x1C); //talk to config register
-    Wire.write(0x10); //set the register bits as 00010000 (+/- 8g full scale range) 
-    Wire.endTransmission(true);
+    mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+    mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+    mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
 
-    //config gyro
-    Wire.write(0x1B); //talk to config register
-    Wire.write(0x10); //set the register bits as 00010000 (1000deg/s full scale)
-    Wire.endTransmission(true);
-
-    delay(20);
 }
 
