@@ -1,5 +1,6 @@
 #include <TFT_eSPI.h>
 #include <SPI.h>
+#include "GPStelemetry.h"
 
 //Display pins
 #define MOSI 23
@@ -34,15 +35,33 @@ void drawText(char* text, int x, int y, int size){
 
 //----MAIN
 void aligningGPS(){
-    
+    drawText("GPS NO LOCK!", 0, 0, 10);
 }
+
+void guageClusterBareBones(float speed){
+    //drawText(string speed, 150, 150, 5);
+    ;
+}
+
+void externManager(){
+    if (!isGPSLocked && state != "aligningGPS"){
+        state = "aligningGPS";
+    } else if (isGPSLocked && state != "main"){
+      state = "main";
+    }
+}
+
 
 void debug(){
     drawText("test", 0, 0, 5);
 }
 
 void renderDisplay(){
+    externManager();
     if (state == "main"){
-        debug();    
+        guageClusterBareBones(speedKMH);
+        //debug();    
+    } else if (state == "aligningGPS"){
+        aligningGPS();
     }
 }
