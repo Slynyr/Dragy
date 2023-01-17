@@ -1,6 +1,7 @@
 #include <TFT_eSPI.h>
 #include <SPI.h>
 #include "GPStelemetry.h"
+#include <string>
 
 //Display pins
 #define MOSI 23
@@ -40,7 +41,8 @@ void aligningGPS(){
 
 void guageClusterBareBones(float speed){
     //drawText(string speed, 150, 150, 5);
-    ;
+    //tft.setTextSize(5);
+    //tft.drawString(to_string(speedKMH.2f), 0, 0);
 }
 
 void externManager(){
@@ -53,7 +55,7 @@ void externManager(){
 
 
 void debug(){
-    drawText("test", 0, 0, 5);
+    //drawText("test", 0, 0, 5);
 }
 
 void renderDisplay(){
