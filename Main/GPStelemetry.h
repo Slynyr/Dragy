@@ -2,10 +2,10 @@
 #define _GPSTELEMETRY_H_
 
 //telemetry
-extern float speedKMH;
-extern float altitudeFT;
-extern float lng;
-extern float lat;
+extern double speedKMH;
+extern double altitudeFT;
+extern double lng;
+extern double lat;
 
 //states 
 extern bool isGPSLocked;

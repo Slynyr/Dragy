@@ -11,15 +11,15 @@
 Adafruit_MPU6050 mpu;
 
 //telemetry
-float vector = 0.f;
-float ax = 0.f;
-float ay = 0.f;
-float az = 0.f;
-float gx = 0.f;
-float gy = 0.f; 
-float gz = 0.f;
-float tempRead = 0.f;
-float heading = 0.f;
+double vector = 0.f;
+double ax = 0.f;
+double ay = 0.f;
+double az = 0.f;
+double gx = 0.f;
+double gy = 0.f; 
+double gz = 0.f;
+double tempRead = 0.f;
+double heading = 0.f;
 
 int gCounter(){
 
@@ -32,7 +32,7 @@ void printTelemetry(){
     Serial.print(" | ay: "); Serial.print(ay);
     Serial.print(" | az: "); Serial.print(az);
  
-    Serial.print(" | temperature: "); Serial.print(temperature);
+    Serial.print(" | temperature: "); Serial.print(tempRead);
 
     Serial.print(" | gx: "); Serial.print(ax);
     Serial.print(" | gy: "); Serial.print(ay);

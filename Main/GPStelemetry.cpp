@@ -8,10 +8,15 @@
 static const uint32_t GPSBaud = 9600;
 
 //telemetry
-float speedKMH = 0.f;
-float altitudeFT = 0.f;
-float lng = 0.f;
-float lat = 0.f;
+double speedKMH = 0.f;
+double altitudeFT = 0.f;
+double lng = 0.f;
+double lat = 0.f; 
+double acceleration = 0.f;
+double lastAccelerationTick = millis();
+double lastAccerlationValue = 0.f;
+double initMillis = millis();
+int accelerationRefreshRate = 1; //seconds
 
 //states
 bool isGPSLocked = false;
@@ -39,14 +44,22 @@ void GPStelemetry(){
         lng = gps.location.lng();
         altitudeFT = gps.altitude.feet();
 
+        if ((lastAccelerationTick - initMillis) > (accelerationRefreshRate * 1000)){
+            lastAccelerationTick = millis();
+            acceleration = speedKMH - lastAccerlationValue;
+        }
+
         Serial.print("Location: ");
         Serial.print(gps.location.lat(), 6);
         Serial.print(", ");
         Serial.print(gps.location.lng(), 6);
-        Serial.print("| Speed: ");
+        Serial.print(" | Speed: ");
         Serial.print(gps.speed.kmph());
         Serial.print("km/h");
-        Serial.println("");
+        Serial.print(" | Acceleration: ");
+        Serial.print(acceleration);
+        Serial.print("km/s");
+        Serial.println("");        
     }
 }
 

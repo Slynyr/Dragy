@@ -10,6 +10,9 @@
 #define RESET 4
 #define dc 2
 
+//ui
+char speedBuffer[1023] = {0};
+
 //colors
 #define BACKGROUNDCOLOR 0x0842
 #define DARKBLUE 0x104D
@@ -29,26 +32,34 @@ void initializeDisplay(){
 }
 
 //----TOOLS
-void drawText(char* text, int x, int y, int size){
+void drawText(const char* text, int x, int y, int size, bool isCentered){
     tft.setTextSize(size);
-    tft.drawString(text, x, y);
+    tft.setTextColor(TFT_WHITE, BACKGROUNDCOLOR);
+    if (isCentered){
+      //tft.setTextDatum(4);
+      tft.drawString(text, x, y, size);
+    } else {
+      //tft.setTextDatum(0);
+      tft.drawString(text, x, y);
+    }
 }
 
 //----MAIN
 void aligningGPS(){
-    drawText("GPS NO LOCK!", 0, 0, 10);
+    drawText("NO GPS LOCK", 10, 160, 10, false);
 }
 
 void guageClusterBareBones(float speed){
-    //drawText(string speed, 150, 150, 5);
-    //tft.setTextSize(5);
-    //tft.drawString(to_string(speedKMH.2f), 0, 0);
+  //String(speed, 2).c_str()
+  //sprintf(speedBuffer, "%.0f", speed);
+  drawText(String(speed, 0).c_str(), 240, 160, 5, false);
 }
 
 void externManager(){
     if (!isGPSLocked && state != "aligningGPS"){
         state = "aligningGPS";
     } else if (isGPSLocked && state != "main"){
+      tft.fillScreen(BACKGROUNDCOLOR);
       state = "main";
     }
 }
