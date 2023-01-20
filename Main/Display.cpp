@@ -15,13 +15,15 @@ char speedBuffer[1023] = {0};
 int velocityBarMultiplier = 50;
 int gCounterBarPos[] = {240, 280};
 double lastspeedDelta = accelerationDelta; //optimization
-double lastspeed = speedKMH;
+double lastspeed = speedKMH; //change to 0**
+int lastSatelliteCount = 0;
 
 //colors
 //#define BACKGROUNDCOLOR 0x0842
 #define BACKGROUNDCOLOR 0x0000
 #define DARKBLUE 0x104D
 #define RED 0xF203
+#define GREEN 0x07F1
 //http://www.rinkydinkelectronics.com/calc_rgb565.php
 //#define BACKGROUNDCOLOR TFT_BLACK
 
@@ -108,6 +110,25 @@ void gIndicatorBasic(float speedDelta){
     lastspeedDelta = speedDelta; //attempt at optimization, reducing the load on the renderer.
 }
 
+void satelliteIndicator(int satCount){
+    if (satCount != lastSatelliteCount){
+        if (satCount < 6){
+            Serial.println("I am being Drawn!");
+            tft.setTextSize(2);
+            tft.setTextColor(RED, BACKGROUNDCOLOR);
+            tft.drawString(String(satCount).c_str(), 5, 3);
+        } else {
+            Serial.println("I am being Drawn!");
+            tft.setTextSize(2);
+            tft.setTextColor(GREEN, BACKGROUNDCOLOR);
+            tft.drawString(String(satCount).c_str(), 5, 3);
+        }
+
+        tft.fillCircle(10, 10, 10, RED);
+    }
+    lastSatelliteCount = satCount;
+}
+
 void externManager(){
     if (!isGPSLocked && state != "aligningGPS"){
         tft.fillScreen(BACKGROUNDCOLOR);
@@ -128,6 +149,7 @@ void renderDisplay(){
     if (state == "main"){
         guageClusterBareBones(speedKMH);
         gIndicatorBasic(accelerationDelta);
+        satelliteIndicator(satelliteCount);
         //debug();    
     } else if (state == "aligningGPS"){
         aligningGPS();

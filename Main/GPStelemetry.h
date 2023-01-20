@@ -8,6 +8,7 @@ extern double lng;
 extern double lat;
 
 extern double accelerationDelta;
+extern int satelliteCount;
 
 //states 
 extern bool isGPSLocked;
