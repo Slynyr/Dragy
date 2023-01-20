@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include "GPStelemetry.h"
 #include <string>
+#include "satSprites.h"
 
 //Display pins
 #define MOSI 23
@@ -28,6 +29,7 @@ int lastSatelliteCount = 0;
 //#define BACKGROUNDCOLOR TFT_BLACK
 
 TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite smallGreenSat = TFT_eSprite(&tft);
 
 //state
 char* state = "main";
@@ -122,6 +124,8 @@ void satelliteIndicator(int satCount){
             tft.setTextSize(2);
             tft.setTextColor(GREEN, BACKGROUNDCOLOR);
             tft.drawString(String(satCount).c_str(), 5, 3);
+
+            smallGreenSat.pushSprite(40, 40, TFT_WHITE);
         }
 
         tft.fillCircle(10, 10, 10, RED);
