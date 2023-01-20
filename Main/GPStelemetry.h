@@ -7,6 +7,8 @@ extern double altitudeFT;
 extern double lng;
 extern double lat;
 
+extern double accelerationDelta;
+
 //states 
 extern bool isGPSLocked;
 

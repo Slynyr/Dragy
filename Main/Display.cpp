@@ -12,10 +12,16 @@
 
 //ui
 char speedBuffer[1023] = {0};
+int velocityBarMultiplier = 50;
+int gCounterBarPos[] = {240, 280};
+double lastspeedDelta = accelerationDelta; //optimization
+double lastspeed = speedKMH;
 
 //colors
-#define BACKGROUNDCOLOR 0x0842
+//#define BACKGROUNDCOLOR 0x0842
+#define BACKGROUNDCOLOR 0x0000
 #define DARKBLUE 0x104D
+#define RED 0xF203
 //http://www.rinkydinkelectronics.com/calc_rgb565.php
 //#define BACKGROUNDCOLOR TFT_BLACK
 
@@ -44,19 +50,67 @@ void drawText(const char* text, int x, int y, int size, bool isCentered){
     }
 }
 
+void drawInt(const int varIn, int x, int y, int size, bool isCentered){
+    tft.setTextSize(size);
+    tft.setTextColor(TFT_WHITE, BACKGROUNDCOLOR);
+    tft.drawNumber(varIn, x, y, size);
+}
+
+void alignmentGrid(){
+    tft.drawLine(0, 160, 480, 160, RED);
+    tft.drawLine(240, 0, 240, 320, RED);
+}
 //----MAIN
 void aligningGPS(){
     drawText("NO GPS LOCK", 10, 160, 10, false);
 }
 
 void guageClusterBareBones(float speed){
-  //String(speed, 2).c_str()
-  //sprintf(speedBuffer, "%.0f", speed);
-  drawText(String(speed, 0).c_str(), 240, 160, 5, false);
+    //speed = 112; //DEBUG LINE, REMOVE
+    //alignmentGrid();
+
+    if (speed != lastspeed){
+        //int wholeSpeed = (int)speed;
+        if (speed < 10){
+            //drawText(String(speed, 0).c_str(), 230, 150, 5, false);
+            drawText(String(speed, 0).c_str(), 200, 150, 5, false);
+            //drawInt(wholeSpeed, 230, 150, 5, false);
+        } else if (speed >= 10 && speed < 100) {
+            drawText(String(speed, 0).c_str(), 215, 150, 5, false);
+            //drawInt(wholeSpeed, 230, 150, 5, false);
+        } else if (speed >= 100 && speed < 1000) {
+            drawText(String(speed, 0).c_str(), 200, 150, 5, false);
+            //drawInt(wholeSpeed, 230, 150, 5, false);
+        } else {
+            drawText("You might want to slow down", 0, 150, 5, false);
+        }
+
+        drawText("km/h", 218, 195, 2, false);
+    }
+    lastspeed = speed; 
+}
+
+void gIndicatorBasic(float speedDelta){
+    //speedDelta = 0.75; //DEBUG LINE, REMOVE
+    //speedDelta = 5; //DEBUG LINE, REMOVE
+
+    int pixelCount = speedDelta * velocityBarMultiplier;
+    if (pixelCount > 220) {
+        pixelCount = 220;
+    } else if (pixelCount < -220){
+        pixelCount = -220;
+    }
+
+    if (speedDelta != lastspeedDelta){
+        tft.fillRect(20, gCounterBarPos[1], 460, 20, BACKGROUNDCOLOR);
+        tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, RED);
+    } 
+    lastspeedDelta = speedDelta; //attempt at optimization, reducing the load on the renderer.
 }
 
 void externManager(){
     if (!isGPSLocked && state != "aligningGPS"){
+        tft.fillScreen(BACKGROUNDCOLOR);
         state = "aligningGPS";
     } else if (isGPSLocked && state != "main"){
       tft.fillScreen(BACKGROUNDCOLOR);
@@ -73,6 +127,7 @@ void renderDisplay(){
     externManager();
     if (state == "main"){
         guageClusterBareBones(speedKMH);
+        gIndicatorBasic(accelerationDelta);
         //debug();    
     } else if (state == "aligningGPS"){
         aligningGPS();
