@@ -22,7 +22,7 @@ double gpsTimeout = 15; //seconds
 int satelliteCount = 0;
 
 //states
-bool isGPSLocked = true;
+bool isGPSLocked = false;
 
 //GPS objects
 TinyGPSPlus gps;

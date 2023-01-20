@@ -2,7 +2,6 @@
 #include <SPI.h>
 #include "GPStelemetry.h"
 #include <string>
-#include "satSprites.h"
 
 //Display pins
 #define MOSI 23
@@ -29,7 +28,6 @@ int lastSatelliteCount = 0;
 //#define BACKGROUNDCOLOR TFT_BLACK
 
 TFT_eSPI tft = TFT_eSPI();
-TFT_eSprite smallGreenSat = TFT_eSprite(&tft);
 
 //state
 char* state = "main";
@@ -66,7 +64,7 @@ void alignmentGrid(){
 }
 //----MAIN
 void aligningGPS(){
-    drawText("NO GPS LOCK", 10, 160, 10, false);
+    drawText("Aligning GPS", 140, 140, 3, false);
 }
 
 void guageClusterBareBones(float speed){
@@ -115,20 +113,18 @@ void gIndicatorBasic(float speedDelta){
 void satelliteIndicator(int satCount){
     if (satCount != lastSatelliteCount){
         if (satCount < 6){
-            Serial.println("I am being Drawn!");
+            drawText("SAT:", 5, 3, 2, false);
             tft.setTextSize(2);
             tft.setTextColor(RED, BACKGROUNDCOLOR);
-            tft.drawString(String(satCount).c_str(), 5, 3);
+            tft.drawString(String(satCount).c_str(), 53, 3);
         } else {
-            Serial.println("I am being Drawn!");
+            drawText("SAT:", 5, 3, 2, false);
             tft.setTextSize(2);
             tft.setTextColor(GREEN, BACKGROUNDCOLOR);
-            tft.drawString(String(satCount).c_str(), 5, 3);
-
-            smallGreenSat.pushSprite(40, 40, TFT_WHITE);
+            tft.drawString(String(satCount).c_str(), 53, 3);
         }
 
-        tft.fillCircle(10, 10, 10, RED);
+        //tft.fillCircle(10, 10, 10, RED);
     }
     lastSatelliteCount = satCount;
 }
