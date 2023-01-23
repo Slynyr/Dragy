@@ -16,7 +16,7 @@ double accelerationDelta = 0.f;
 double lastAccelerationTick = millis();
 double lastAccerlationValue = 0.f;
 double initMillis = millis();
-double accelerationRefreshRate = .1; //seconds
+double accelerationRefreshRate = .5; //seconds
 double lastGPSPingMillis = millis();
 double gpsTimeout = 15; //seconds
 int satelliteCount = 0;
@@ -46,6 +46,7 @@ void GPStelemetry(){
             accelerationDelta = speedKMH - lastAccerlationValue;
             lastAccerlationValue = speedKMH;
             lastAccelerationTick = millis();
+            Serial.println(accelerationDelta);
             //add G force calculation
         }
 

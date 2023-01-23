@@ -12,7 +12,7 @@
 
 //ui
 char speedBuffer[1023] = {0};
-int velocityBarMultiplier = 50;
+int velocityBarMultiplier = 20;
 int gCounterBarPos[] = {240, 280};
 double lastspeedDelta = accelerationDelta; //optimization
 int lastVelocityPixelCount = 0;
@@ -72,8 +72,12 @@ void aligningGPS(){
 void guageClusterBareBones(float speed){
     //speed = 112; //DEBUG LINE, REMOVE
     //alignmentGrid();
-
     if (speed != lastspeed){
+        if (lastspeed > 9 && speed < 10){
+            tft.fillRect(185, 150, 15, 40, BACKGROUNDCOLOR); //cover up double digit text remains
+            tft.fillRect(265, 150, 15, 40, BACKGROUNDCOLOR); //cover up double digit text remains
+        }
+
         //int wholeSpeed = (int)speed;
         if (speed < 10){
             //drawText(String(speed, 0).c_str(), 230, 150, 5, false);
@@ -107,7 +111,7 @@ void gIndicatorBasic(float speedDelta){
 
     //velocity bar optimization 
     if (speedDelta != lastspeedDelta){
-        Serial.println(speedDelta);
+        //Serial.println(speedDelta);
         if (pixelCount >= 0 && lastVelocityPixelCount >= 0){ //if velocity polarity hasnt inversed (+)
             if (pixelCount < lastVelocityPixelCount){
                 int pixelDiff = lastVelocityPixelCount - pixelCount;
