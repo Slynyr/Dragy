@@ -15,6 +15,7 @@ char speedBuffer[1023] = {0};
 int velocityBarMultiplier = 50;
 int gCounterBarPos[] = {240, 280};
 double lastspeedDelta = accelerationDelta; //optimization
+double lastVelocityPixelCount = 0;
 double lastspeed = speedKMH; //change to 0**
 int lastSatelliteCount = 0;
 
@@ -24,6 +25,7 @@ int lastSatelliteCount = 0;
 #define DARKBLUE 0x104D
 #define RED 0xF203
 #define GREEN 0x07F1
+#define BABYBLUE 0x275F
 //http://www.rinkydinkelectronics.com/calc_rgb565.php
 //#define BACKGROUNDCOLOR TFT_BLACK
 
@@ -103,11 +105,34 @@ void gIndicatorBasic(float speedDelta){
         pixelCount = -220;
     }
 
+    //velocity bar optimization 
     if (speedDelta != lastspeedDelta){
-        tft.fillRect(20, gCounterBarPos[1], 460, 20, BACKGROUNDCOLOR);
-        tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, RED);
+        if (pixelCount >= 0 && lastVelocityPixelCount >= 0){ //if velocity polarity hasnt inversed (+)
+            if (pixelCount < lastVelocityPixelCount){
+                int pixelDiff = lastVelocityPixelCount - pixelCount;
+                tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], -pixelDiff, 20, BACKGROUNDCOLOR); //cutting right to left from last frame
+            } else if (pixelCount > lastVelocityPixelCount){
+                int pixelDiff = pixelCount - lastVelocityPixelCount;
+                tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], pixelDiff, 20, BABYBLUE); //continuing from last frame bar and expanding it
+            }
+        } else if (pixelCount < 0 and lastVelocityPixelCount < 0){ //if velocity polarity hasnt inversed (-)
+            if (pixelCount > lastVelocityPixelCount){
+                int pixelDiff = lastVelocityPixelCount - pixelCount;
+                tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], -pixelDiff, 20, BACKGROUNDCOLOR);
+            } else if (pixelCount < lastVelocityPixelCount){
+                int pixelDiff = pixelCount - lastVelocityPixelCount;
+                tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], pixelDiff, 20, BABYBLUE);
+            }
+        } else {
+            tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], lastVelocityPixelCount, 20, BACKGROUNDCOLOR);
+            tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, BABYBLUE);
+        }
+
+        //tft.fillRect(20, gCounterBarPos[1], 460, 20, GREEN);
+        //tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, RED);
     } 
     lastspeedDelta = speedDelta; //attempt at optimization, reducing the load on the renderer.
+    lastVelocityPixelCount = pixelCount;
 }
 
 void satelliteIndicator(int satCount){
@@ -138,7 +163,6 @@ void externManager(){
       state = "main";
     }
 }
-
 
 void debug(){
     //drawText("test", 0, 0, 5);
