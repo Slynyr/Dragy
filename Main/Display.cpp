@@ -15,7 +15,7 @@ char speedBuffer[1023] = {0};
 int velocityBarMultiplier = 50;
 int gCounterBarPos[] = {240, 280};
 double lastspeedDelta = accelerationDelta; //optimization
-double lastVelocityPixelCount = 0;
+int lastVelocityPixelCount = 0;
 double lastspeed = speedKMH; //change to 0**
 int lastSatelliteCount = 0;
 
@@ -107,32 +107,39 @@ void gIndicatorBasic(float speedDelta){
 
     //velocity bar optimization 
     if (speedDelta != lastspeedDelta){
+        Serial.println(speedDelta);
         if (pixelCount >= 0 && lastVelocityPixelCount >= 0){ //if velocity polarity hasnt inversed (+)
             if (pixelCount < lastVelocityPixelCount){
                 int pixelDiff = lastVelocityPixelCount - pixelCount;
                 tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], -pixelDiff, 20, BACKGROUNDCOLOR); //cutting right to left from last frame
+                //Serial.printf("[RENDER] TESTCASE 1 - %d\n", pixelDiff);
             } else if (pixelCount > lastVelocityPixelCount){
                 int pixelDiff = pixelCount - lastVelocityPixelCount;
                 tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], pixelDiff, 20, BABYBLUE); //continuing from last frame bar and expanding it
+                //Serial.printf("[RENDER] TESTCASE 2 - %d\n", pixelDiff);
             }
-        } else if (pixelCount < 0 and lastVelocityPixelCount < 0){ //if velocity polarity hasnt inversed (-)
+        } else if (pixelCount < 0 && lastVelocityPixelCount < 0){ //if velocity polarity hasnt inversed (-)
             if (pixelCount > lastVelocityPixelCount){
                 int pixelDiff = lastVelocityPixelCount - pixelCount;
                 tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], -pixelDiff, 20, BACKGROUNDCOLOR);
+                //Serial.printf("[RENDER] TESTCASE 3 - %d\n", pixelDiff);
             } else if (pixelCount < lastVelocityPixelCount){
                 int pixelDiff = pixelCount - lastVelocityPixelCount;
                 tft.fillRect(gCounterBarPos[0] + lastVelocityPixelCount, gCounterBarPos[1], pixelDiff, 20, BABYBLUE);
+                //Serial.printf("[RENDER] TESTCASE 4 - %d\n", pixelDiff);
             }
         } else {
+            //Serial.printf("[RENDER] TESTCASE 5 - FLIPPED\n");
             tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], lastVelocityPixelCount, 20, BACKGROUNDCOLOR);
             tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, BABYBLUE);
         }
 
-        //tft.fillRect(20, gCounterBarPos[1], 460, 20, GREEN);
-        //tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, RED);
+        tft.fillRect(20, gCounterBarPos[1], 460, 20, BACKGROUNDCOLOR);
+        tft.fillRect(gCounterBarPos[0], gCounterBarPos[1], pixelCount, 20, BABYBLUE);
+        
+        lastspeedDelta = speedDelta; //attempt at optimization, reducing the load on the renderer.
+        lastVelocityPixelCount = pixelCount;
     } 
-    lastspeedDelta = speedDelta; //attempt at optimization, reducing the load on the renderer.
-    lastVelocityPixelCount = pixelCount;
 }
 
 void satelliteIndicator(int satCount){

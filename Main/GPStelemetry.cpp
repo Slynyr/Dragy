@@ -23,6 +23,7 @@ int satelliteCount = 0;
 
 //states
 bool isGPSLocked = false;
+bool printTelemetry = false; 
 
 //GPS objects
 TinyGPSPlus gps;
@@ -48,19 +49,21 @@ void GPStelemetry(){
             //add G force calculation
         }
 
-        Serial.print("Satellites: ");
-        Serial.print(satelliteCount);
-        Serial.print(" | Location: ");
-        Serial.print(gps.location.lat(), 6);
-        Serial.print(", ");
-        Serial.print(gps.location.lng(), 6);
-        Serial.print(" | Speed: ");
-        Serial.print(gps.speed.kmph());
-        Serial.print("km/h");
-        Serial.print(" | Acceleration-Delta: ");
-        Serial.print(accelerationDelta);
-        Serial.print("km/h");
-        Serial.println("");        
+        if (printTelemetry){
+            Serial.print("Satellites: ");
+            Serial.print(satelliteCount);
+            Serial.print(" | Location: ");
+            Serial.print(gps.location.lat(), 6);
+            Serial.print(", ");
+            Serial.print(gps.location.lng(), 6);
+            Serial.print(" | Speed: ");
+            Serial.print(gps.speed.kmph());
+            Serial.print("km/h");
+            Serial.print(" | Acceleration-Delta: ");
+            Serial.print(accelerationDelta);
+            Serial.print("km/h");
+            Serial.println(""); 
+        }       
     }
 }
 
