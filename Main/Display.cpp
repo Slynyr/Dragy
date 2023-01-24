@@ -74,8 +74,8 @@ void guageClusterBareBones(float speed){
     //alignmentGrid();
     if (speed != lastspeed){
         if (lastspeed > 9 && speed < 10){
-            tft.fillRect(185, 150, 15, 40, BACKGROUNDCOLOR); //cover up double digit text remains
-            tft.fillRect(265, 150, 15, 40, BACKGROUNDCOLOR); //cover up double digit text remains
+            tft.fillRect(185, 150, 15, 40, GREEN); //cover up double digit text remains
+            tft.fillRect(265, 150, 15, 40, GREEN); //cover up double digit text remains
         }
 
         //int wholeSpeed = (int)speed;
@@ -165,6 +165,11 @@ void satelliteIndicator(int satCount){
     lastSatelliteCount = satCount;
 }
 
+void drawMileage(){
+    drawText(("%fkm", String(totalDistance, 0).c_str()), 5, 300, 2, false);
+    //drawText(String(speed, 0).c_str(), 200, 150, 5, false);
+}
+
 void externManager(){
     if (!isGPSLocked && state != "aligningGPS"){
         tft.fillScreen(BACKGROUNDCOLOR);
@@ -185,6 +190,7 @@ void renderDisplay(){
         guageClusterBareBones(speedKMH);
         gIndicatorBasic(accelerationDelta);
         satelliteIndicator(satelliteCount);
+        drawMileage();
         //debug();    
     } else if (state == "aligningGPS"){
         aligningGPS();

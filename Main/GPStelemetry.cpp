@@ -1,6 +1,7 @@
 #include <TinyGPSPlus.h>
 #include <HardwareSerial.h>
-
+#include <cmath>
+#include <math.h>
 
 //GPS module pins
 #define GPSrx 16
@@ -12,23 +13,42 @@ double speedKMH = 0.f;
 double altitudeFT = 0.f;
 double lng = 0.f;
 double lat = 0.f; 
+double lastLng = 0.f;
+double lastLat = 0.f; 
 double accelerationDelta = 0.f;
 double lastAccelerationTick = millis();
 double lastAccerlationValue = 0.f;
 double initMillis = millis();
 double accelerationRefreshRate = .5; //seconds
 double lastGPSPingMillis = millis();
+double lastMileageUpdate = millis();
+double mileageUpdateTime = .5; //seconds
 double gpsTimeout = 15; //seconds
 int satelliteCount = 0;
+double totalDistance = 0.f;
 
 //states
 bool isGPSLocked = false;
-bool printTelemetry = false; 
+bool printTelemetry = true; 
 
 //GPS objects
 TinyGPSPlus gps;
 HardwareSerial hs(1);
 
+//calculate distance in km between 2 points
+double toRad(double degree) {
+    return degree/180 * M_PI;
+}
+
+double calculateDistance(double lat1, double long1, double lat2, double long2) {
+    double dist;
+    dist = sin(toRad(lat1)) * sin(toRad(lat2)) + cos(toRad(lat1)) * cos(toRad(lat2)) * cos(toRad(long1 - long2));
+    dist = acos(dist);
+    dist = 6371 * dist;
+    return dist;
+}
+
+//telemetry
 void GPStelemetry(){
     if (gps.location.isValid()){
         if (isGPSLocked == false){
@@ -41,14 +61,25 @@ void GPStelemetry(){
         altitudeFT = gps.altitude.feet();
         satelliteCount = gps.satellites.value();
 
+        //calculating acceleration
         if ((millis() - lastAccelerationTick) > (accelerationRefreshRate * 1000)){
             //Serial.println("[NOTIF] Speed Delta has been updated");
             accelerationDelta = speedKMH - lastAccerlationValue;
             lastAccerlationValue = speedKMH;
             lastAccelerationTick = millis();
-            Serial.println(accelerationDelta);
+            //Serial.println(accelerationDelta);
             //add G force calculation
         }
+
+        //mileage counter
+        if (lastLat == 0 && lastLng == 0){ //setting first pos
+            lastLat = lat;
+            lastLng = lng;
+        }
+
+        totalDistance += calculateDistance(lat, lng, lastLat, lastLng);//mileage calculation
+        lastLat = lat;
+        lastLng = lng;
 
         if (printTelemetry){
             Serial.print("Satellites: ");
@@ -63,6 +94,9 @@ void GPStelemetry(){
             Serial.print(" | Acceleration-Delta: ");
             Serial.print(accelerationDelta);
             Serial.print("km/h");
+            Serial.print(" | Total-Distance: ");
+            Serial.print(totalDistance);
+            Serial.print("km");
             Serial.println(""); 
         }       
     }
