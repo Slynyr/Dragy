@@ -10,6 +10,7 @@ extern double lat;
 extern double accelerationDelta;
 extern int satelliteCount;
 extern double totalDistance;
+extern bool doDistanceCount; 
 
 //states 
 extern bool isGPSLocked;

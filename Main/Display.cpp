@@ -70,12 +70,12 @@ void aligningGPS(){
 }
 
 void guageClusterBareBones(float speed){
-    //speed = 112; //DEBUG LINE, REMOVE
+    //speed = 42; //DEBUG LINE, REMOVE
     //alignmentGrid();
     if (speed != lastspeed){
         if (lastspeed > 9 && speed < 10){
-            tft.fillRect(185, 150, 15, 40, GREEN); //cover up double digit text remains
-            tft.fillRect(265, 150, 15, 40, GREEN); //cover up double digit text remains
+            tft.fillRect(185, 150, 15, 40, BACKGROUNDCOLOR); //cover up double digit text remains
+            tft.fillRect(255, 150, 25, 40, BACKGROUNDCOLOR); //cover up double digit text remains
         }
 
         //int wholeSpeed = (int)speed;
@@ -99,7 +99,7 @@ void guageClusterBareBones(float speed){
 }
 
 void gIndicatorBasic(float speedDelta){
-    //speedDelta = 0.75; //DEBUG LINE, REMOVE
+    //speedDelta = 8.2; //DEBUG LINE, REMOVE
     //speedDelta = 5; //DEBUG LINE, REMOVE
 
     int pixelCount = speedDelta * velocityBarMultiplier;
@@ -166,8 +166,9 @@ void satelliteIndicator(int satCount){
 }
 
 void drawMileage(){
-    drawText(("%fkm", String(totalDistance, 0).c_str()), 5, 300, 2, false);
-    //drawText(String(speed, 0).c_str(), 200, 150, 5, false);
+    if (doDistanceCount){
+        drawText(("%fkm", String(totalDistance, 0).c_str()), 5, 300, 2, false);
+    }
 }
 
 void externManager(){

@@ -19,7 +19,7 @@ double accelerationDelta = 0.f;
 double lastAccelerationTick = millis();
 double lastAccerlationValue = 0.f;
 double initMillis = millis();
-double accelerationRefreshRate = .5; //seconds
+double accelerationRefreshRate = .25; //seconds
 double lastGPSPingMillis = millis();
 double lastMileageUpdate = millis();
 double mileageUpdateTime = .5; //seconds
@@ -29,7 +29,8 @@ double totalDistance = 0.f;
 
 //states
 bool isGPSLocked = false;
-bool printTelemetry = true; 
+bool printTelemetry = true;
+bool doDistanceCount = false;  
 
 //GPS objects
 TinyGPSPlus gps;
@@ -45,6 +46,7 @@ double calculateDistance(double lat1, double long1, double lat2, double long2) {
     dist = sin(toRad(lat1)) * sin(toRad(lat2)) + cos(toRad(lat1)) * cos(toRad(lat2)) * cos(toRad(long1 - long2));
     dist = acos(dist);
     dist = 6371 * dist;
+    //Serial.println(dist);
     return dist;
 }
 
@@ -72,14 +74,21 @@ void GPStelemetry(){
         }
 
         //mileage counter
-        if (lastLat == 0 && lastLng == 0){ //setting first pos
+        if (doDistanceCount){
+            if (lastLat == 0 && lastLng == 0){ //setting first pos
+                lastLat = lat;
+                lastLng = lng;
+            }
+
+            double tempDistance = calculateDistance(lat, lng, lastLat, lastLng);
+            if (tempDistance){
+                totalDistance += tempDistance;
+            } else {
+                Serial.printf("[WARN] Threw out %f\n", tempDistance);
+            }
             lastLat = lat;
             lastLng = lng;
         }
-
-        totalDistance += calculateDistance(lat, lng, lastLat, lastLng);//mileage calculation
-        lastLat = lat;
-        lastLng = lng;
 
         if (printTelemetry){
             Serial.print("Satellites: ");
